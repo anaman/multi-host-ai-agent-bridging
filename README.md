@@ -1,4 +1,4 @@
-# Multi-Host AI Agent Bridging for MCP and Agent Sharing
+# Multi-Host AI agent bridging for mcp and agent sharing
 
 Combine two ordinary machines over a private mesh VPN so that a small laptop can
 use a workstation's GPUs, LLM servers, MCP tools, and autonomous agents — without
