@@ -1,0 +1,25 @@
+# local configuration and secrets
+bridge.env
+.env
+*.env.local
+
+# generated exchange data
+exchange/
+tasks/
+results/
+artifacts/
+
+# logs and caches
+*.log
+__pycache__/
+*.pyc
+.uv/
+.venv/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/

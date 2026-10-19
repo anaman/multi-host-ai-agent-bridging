@@ -1,0 +1,22 @@
+[Unit]
+Description=Persistent SSH forward to the worker host
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Requires autossh (apt install autossh). Keeps a loopback port forwarded to the
+# worker so services that only accept localhost can be used without a per-session
+# tunnel. Replace the target and ports with yours.
+ExecStart=/usr/bin/autossh -M 0 -N \
+  -o BatchMode=yes \
+  -o ConnectTimeout=10 \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=3 \
+  -o ExitOnForwardFailure=yes \
+  -L 127.0.0.1:9875:127.0.0.1:9875 \
+  <user>@worker-1
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

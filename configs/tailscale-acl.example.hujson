@@ -1,0 +1,19 @@
+// Example tailnet ACL. Replace tags/ports with your own; keep it narrow.
+//
+// Apply in the Tailscale admin console (Access controls). `autogroup:member`
+// covers the humans in your tailnet; `tag:worker` is set on the worker via
+// `tailscale up --advertise-tags=tag:worker` or the admin console.
+{
+  "tagOwners": {
+    "tag:worker": ["autogroup:admin"]
+  },
+  "acls": [
+    // The orchestrator may reach the worker's SSH, model HTTPS, and agent
+    // HTTPS ports. Nothing else, in either direction.
+    {
+      "action": "accept",
+      "src": ["autogroup:member"],
+      "dst": ["tag:worker:22,8446,8443"]
+    }
+  ]
+}

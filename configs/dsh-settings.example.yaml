@@ -1,0 +1,29 @@
+# Example: register a worker's OpenAI-compatible endpoint as a pickable model.
+#
+# DSH: merge under the `llm-pi-ai:` key of ~/.dsh/settings.yaml (and, in current
+# builds, mirror the same provider in the profile patch so the running process
+# sees it without a restart). Other harnesses: use the equivalent
+# OpenAI-compatible provider entry.
+#
+# Set contextWindow to the value the *server* actually enforces. An oversized
+# value makes the orchestrator send prompts that the worker silently truncates.
+
+llm-pi-ai:
+  providers:
+    worker-ollama:
+      displayName: worker-1 Ollama (tailnet)
+      api: openai-completions
+      baseURL: https://worker-1.<tailnet>.ts.net:8446/v1
+      models:
+        - id: deepseek-r1:8b
+          name: deepseek-r1:8b (worker-1)
+          contextWindow: 8192
+          maxTokens: 4096
+        - id: deepseek-r1:14b
+          name: deepseek-r1:14b (worker-1)
+          contextWindow: 8192
+          maxTokens: 4096
+        - id: nemotron-3-nano:4b
+          name: nemotron-3-nano:4b (worker-1)
+          contextWindow: 8192
+          maxTokens: 4096

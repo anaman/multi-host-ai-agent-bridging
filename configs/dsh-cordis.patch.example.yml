@@ -1,0 +1,57 @@
+# Example: attach a remote MCP server and a remote model provider.
+#
+# These rows are written for the DeepSeek Harness (DSH) profile patch file
+# ~/.dsh/profiles/web/cordis.patch.yml. The same idea works for any harness that
+# can run an MCP stdio server and register an OpenAI-compatible provider: the
+# values below are the only host-specific parts.
+
+- insert:
+    # A loopback-only MCP server on the worker, bridged by a local SSH forward.
+    - id: mcp-remote-tool
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: freecad
+        transport: stdio
+        command: /ABSOLUTE/PATH/TO/scripts/freecad-mcp-tunnel.sh
+        env:
+          HOME: /home/<user>
+          BRIDGE_WORKER_SSH: <user>@worker-1
+        toolCallTimeoutMs: 180000
+
+    # Optional: an agent that speaks MCP over stdio, reached over SSH.
+    # Disabled by default because its tools cost context on every request.
+    - id: mcp-remote-agent
+      name: '@deepseek-ai/dsh-mcp-client'
+      disabled: true
+      config:
+        serverName: agent
+        transport: stdio
+        command: ssh
+        args:
+          - '-o'
+          - 'BatchMode=yes'
+          - '-o'
+          - 'ConnectTimeout=10'
+          - '<user>@worker-1'
+          - '/home/<user>/.local/bin/agent'
+          - 'mcp'
+          - 'serve'
+        env:
+          HOME: /home/<user>
+        toolCallTimeoutMs: 120000
+
+# The live model route. Mirror the same provider in ~/.dsh/settings.yaml for
+# persistence; the patch row is what the running process reads in current DSH
+# builds (settings.yaml is imported at boot).
+- id: llm-pi-ai
+  config:
+    providers:
+      worker-ollama:
+        displayName: worker-1 Ollama (tailnet)
+        api: openai-completions
+        baseURL: https://worker-1.<tailnet>.ts.net:8446/v1
+        models:
+          - id: deepseek-r1:8b
+            name: deepseek-r1:8b (worker-1)
+            contextWindow: 8192
+            maxTokens: 4096
